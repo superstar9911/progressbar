@@ -10,19 +10,17 @@ document.addEventListener("DOMContentLoaded", (event) => {
         },
 
         setupListeners: function () {
-            window.addEventListener("message", function (event) {
+            window.addEventListener("message", (event) => {
                 if (event.data.action === "progress") {
-                    ProgressBar.update(event.data);
+                    this.update(event.data);
                 } else if (event.data.action === "cancel") {
-                    ProgressBar.cancel();
+                    this.cancel();
                 }
             });
         },
 
         update: function (data) {
-            if (this.animationFrameRequest) {
-                cancelAnimationFrame(this.animationFrameRequest);
-            }
+            if (this.animationFrameRequest) cancelAnimationFrame(this.animationFrameRequest);
             clearTimeout(this.cancelledTimer);
 
             this.progressLabel.textContent = data.label;
@@ -32,8 +30,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
             let duration = parseInt(data.duration, 10);
 
             const animateProgress = () => {
-                let timeElapsed = Date.now() - startTime;
-                let progress = timeElapsed / duration;
+                let elapsed = Date.now() - startTime;
+                let progress = elapsed / duration;
                 if (progress > 1) progress = 1;
                 let percentage = Math.round(progress * 100);
                 this.progressBar.style.width = percentage + "%";
@@ -48,10 +46,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
         },
 
         cancel: function () {
-            if (this.animationFrameRequest) {
-                cancelAnimationFrame(this.animationFrameRequest);
-                this.animationFrameRequest = null;
-            }
+            if (this.animationFrameRequest) cancelAnimationFrame(this.animationFrameRequest);
             this.progressLabel.textContent = "CANCELLED";
             this.progressPercentage.textContent = "";
             this.progressBar.style.width = "100%";
@@ -74,18 +69,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
         postAction: function (action) {
             fetch(`https://progressbar/${action}`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({}),
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({})
             });
         },
 
         closeUI: function () {
             let mainContainer = document.querySelector(".main-container");
-            if (mainContainer) {
-                mainContainer.style.display = "none";
-            }
+            if (mainContainer) mainContainer.style.display = "none";
         },
     };
 
